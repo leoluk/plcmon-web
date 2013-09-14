@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--<link rel="shortcut icon" href="../../assets/ico/favicon.png">-->
+
+    <title>DK0FR PLCMON status</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.css" rel="stylesheet">
+    <!--<link href="../static/css/bootstrap-theme.css" rel="stylesheet">-->
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/jumbotron.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="container">
+    <div class="header">
+        <!--<ul class="nav nav-pills pull-right">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>-->
+        <h3 class="text-muted">DK0FR Clubheim-Status</h3>
+    </div>
+
+    <div class="status">
+
+        {% if status %}
+            <p><a class="btn btn-lg btn-success" href="#">Geöffnet</a></p>
+        {% else %}
+            <p><a class="btn btn-lg btn-danger" href="#">Geschlossen</a></p>
+        {% endif %}
+
+        <p>Letzte Zustandsänderung vor <strong>{{ last_change }}</strong>.</p>
+
+        {% if alarm %}
+            <div class="alert alert-danger">
+                Es liegt eine Alarmmeldung vor, die noch nicht zurückgesetzt wurde.
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="lastlog">
+
+        <h3>Letzte 20 Ereignisse</h3>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Zeitstempel</th>
+                <th>Anwendung</th>
+                <th></th>
+                <th>Titel</th>
+                <th>Nachricht</th>
+                <th>Priorität</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for event in events %}
+                <tr class="
+                {% if event[-1] == 2 %}danger
+                {% elif event[-1] == 1 %}warning
+                {% endif %}">
+
+                    {% for row in event %}
+                        <td>{{ row }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+</div>
+<!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+</body>
+</html>
