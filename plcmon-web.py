@@ -4,7 +4,6 @@ from babel.dates import format_timedelta
 
 from flask import Flask, render_template, g, redirect, url_for
 
-
 import config
 
 
@@ -34,17 +33,28 @@ def plcmon_status():
                                    " event_text, priority FROM events ORDER BY timestamp DESC LIMIT 20"
                                    "  ").fetchall()
 
-    is_open = get_db().execute("SELECT plcmon_data FROM events "
-                               "WHERE plcmon_data IN (1, 2) ORDER BY "
-                               "timestamp DESC LIMIT 1").fetchone()[0] == 2
+    try:
+        is_open = get_db().execute("SELECT plcmon_data FROM events "
+                                   "WHERE plcmon_data IN (1, 2) ORDER BY "
+                                   "timestamp DESC LIMIT 1").fetchone()[0] == 2
+    except TypeError:
+        is_open = False
 
-    is_alarm = get_db().execute("SELECT plcmon_data FROM events "
-                                "WHERE plcmon_data IN (3, 4) ORDER BY "
-                                "timestamp DESC LIMIT 1").fetchone()[0] == 3
+    try:
+        is_alarm = get_db().execute("SELECT plcmon_data FROM events "
+                                    "WHERE plcmon_data IN (3, 4) ORDER BY "
+                                    "timestamp DESC LIMIT 1").fetchone()[0] == 3
 
-    last_change = get_db().execute("SELECT datetime(timestamp, 'localtime') as '[timestamp]' FROM "
+    except TypeError:
+        is_alarm = False
+
+    try:
+        last_change = get_db().execute("SELECT datetime(timestamp, 'localtime') AS '[timestamp]' FROM "
                                        "events WHERE plcmon_data IN (1, 2, 4) "
                                        "ORDER BY timestamp DESC LIMIT 1").fetchone()[0]
+
+    except TypeError:
+        last_change = "N/A"
 
     delta = format_timedelta(datetime.datetime.now() - last_change)
 
@@ -62,5 +72,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run()
+    app.debug = False
+    app.run(host="0.0.0.0", threaded=True, port=2993)
