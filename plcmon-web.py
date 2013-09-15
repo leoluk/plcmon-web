@@ -29,29 +29,32 @@ def close_connection(exception):
 
 @app.route('/plcmon')
 def plcmon_status():
-    last_events = get_db().execute("SELECT timestamp, app_name, app_label, event_source, "
-                                   " event_text, priority FROM events ORDER BY timestamp DESC LIMIT 20"
-                                   "  ").fetchall()
+    last_events = get_db().execute(
+        "SELECT timestamp, app_name, app_label, event_source, "
+        " event_text, priority FROM events ORDER BY timestamp DESC LIMIT 20"
+        "  ").fetchall()
 
     try:
         is_open = get_db().execute("SELECT plcmon_data FROM events "
                                    "WHERE plcmon_data IN (1, 2) ORDER BY "
-                                   "timestamp DESC LIMIT 1").fetchone()[0] == 2
+                                   " timestamp DESC LIMIT 1").fetchone()[0] == 2
     except TypeError:
         is_open = False
 
     try:
         is_alarm = get_db().execute("SELECT plcmon_data FROM events "
                                     "WHERE plcmon_data IN (3, 4) ORDER BY "
-                                    "timestamp DESC LIMIT 1").fetchone()[0] == 3
+                                    " timestamp DESC LIMIT 1").fetchone()[
+                       0] == 3
 
     except TypeError:
         is_alarm = False
 
     try:
-        last_change = get_db().execute("SELECT datetime(timestamp, 'localtime') AS '[timestamp]' FROM "
-                                       "events WHERE plcmon_data IN (1, 2, 4) "
-                                       "ORDER BY timestamp DESC LIMIT 1").fetchone()[0]
+        last_change = get_db().execute(
+            "SELECT datetime( timestamp , 'localtime') AS '[timestamp]' FROM "
+            " events WHERE plcmon_data IN (1, 2, 4) "
+            " ORDER BY timestamp DESC LIMIT 1").fetchone()[0]
 
     except TypeError:
         last_change = "N/A"
@@ -72,5 +75,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.debug = False
+    app.debug = config.DEBUG
     app.run(host="0.0.0.0", threaded=True, port=2993)
