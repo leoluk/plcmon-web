@@ -30,7 +30,8 @@ def close_connection(exception):
 @app.route('/plcmon')
 def plcmon_status():
     last_events = get_db().execute(
-        "SELECT timestamp, app_name, app_label, event_source, "
+        "SELECT datetime(timestamp, 'localtime'), app_name, app_label,"
+        " event_source, "
         " event_text, priority FROM events ORDER BY timestamp DESC LIMIT 20"
         "  ").fetchall()
 
